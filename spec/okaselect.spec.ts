@@ -10,13 +10,16 @@ describe('okaselect', () => {
 
     describe('select', () => {
       describe('when shift is false', () => {
-        it('should replace the id', () => {
+        it('should replace selected ids with new id', () => {
           const target = useSelectable(() => items)
           expect(target.getSelectedItems()).toEqual([])
           expect(target.getLastSelectedId()).toBe(undefined)
           target.select('a')
           expect(target.getSelectedItems()).toEqual([{ id: 'a' }])
           expect(target.getLastSelectedId()).toBe('a')
+          // idempotent
+          target.select('a')
+          expect(target.getSelectedItems()).toEqual([{ id: 'a' }])
         })
       })
 
@@ -35,6 +38,38 @@ describe('okaselect', () => {
           target.select('c', true)
           target.select('a', true)
           expect(target.getSelectedItems()).toEqual([{ id: 'c' }])
+        })
+      })
+    })
+
+    describe('multiSelect', () => {
+      describe('when shift is false', () => {
+        it('should replace selected ids with new ids', () => {
+          const target = useSelectable(() => items)
+          target.select('b')
+          target.multiSelect(['a', 'c'])
+          expect(target.getSelectedIds()).toEqual(['a', 'c'])
+          // idempotent
+          target.multiSelect(['a', 'c'])
+          expect(target.getSelectedIds()).toEqual(['a', 'c'])
+        })
+      })
+
+      describe('when shift is true', () => {
+        it('should add the ids if some of the ids have not been selected yet', () => {
+          const target = useSelectable(() => items)
+          target.multiSelect(['a'], true)
+          expect(target.getSelectedIds()).toEqual(['a'])
+          target.multiSelect(['b'], true)
+          expect(target.getSelectedIds()).toEqual(['a', 'b'])
+          target.multiSelect(['a', 'c'], true)
+          expect(target.getSelectedIds()).toEqual(['a', 'b', 'c'])
+        })
+        it('should remove the ids if all of its have been selected already', () => {
+          const target = useSelectable(() => items)
+          target.multiSelect(['a', 'b', 'c'], true)
+          target.multiSelect(['a', 'c'], true)
+          expect(target.getSelectedIds()).toEqual(['b'])
         })
       })
     })

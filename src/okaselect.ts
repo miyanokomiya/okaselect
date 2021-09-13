@@ -25,6 +25,21 @@ export function useSelectable<T>(getItems: () => Items<T>) {
     applySelect(selectedIds, id, shift)
   }
 
+  function multiSelect(ids: Identity[], shift = false): void {
+    const alreadySelectedIds = ids.filter((id) => selectedIds.has(id))
+
+    if (shift) {
+      if (alreadySelectedIds.length === ids.length) {
+        // clear these ids
+        alreadySelectedIds.forEach((id) => selectedIds.delete(id))
+      } else {
+        ids.forEach((id) => selectedIds.set(id, true))
+      }
+    } else {
+      selectedIds = new Map(ids.map((id) => [id, true]))
+    }
+  }
+
   function selectAll(toggle = false): void {
     selectedIds = execSelectAll(
       Object.keys(getItems()),
@@ -46,6 +61,7 @@ export function useSelectable<T>(getItems: () => Items<T>) {
     getSelectedIds,
     getLastSelectedId,
     select,
+    multiSelect,
     selectAll,
     clear,
     clearAll,
