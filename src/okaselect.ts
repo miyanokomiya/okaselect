@@ -33,6 +33,10 @@ export function useSelectable<T>(getItems: () => Items<T>) {
     )
   }
 
+  function clear(id: Identity): void {
+    selectedIds.delete(id)
+  }
+
   function clearAll(): void {
     selectedIds.clear()
   }
@@ -43,6 +47,7 @@ export function useSelectable<T>(getItems: () => Items<T>) {
     getLastSelectedId,
     select,
     selectAll,
+    clear,
     clearAll,
   }
 }
