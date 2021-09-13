@@ -5,7 +5,7 @@ type SelectedMap = Map<Identity, true>
 
 export function useSelectable<T>(getItems: () => Items<T>) {
   // this map save the order of selections
-  const selectedIds: SelectedMap = new Map()
+  let selectedIds: SelectedMap = new Map()
 
   // returned array keeps the order of selections
   function getSelectedIds(): Identity[] {
@@ -22,7 +22,15 @@ export function useSelectable<T>(getItems: () => Items<T>) {
   }
 
   function select(id: Identity, shift = false): void {
-    execSelect(selectedIds, id, shift)
+    applySelect(selectedIds, id, shift)
+  }
+
+  function selectAll(toggle = false): void {
+    selectedIds = execSelectAll(
+      Object.keys(getItems()),
+      selectedIds.size,
+      toggle
+    )
   }
 
   return {
@@ -30,10 +38,11 @@ export function useSelectable<T>(getItems: () => Items<T>) {
     getSelectedIds,
     getLastSelectedId,
     select,
+    selectAll,
   }
 }
 
-function execSelect(map: SelectedMap, id: Identity, shift = false): void {
+function applySelect(map: SelectedMap, id: Identity, shift = false): void {
   if (!shift) {
     map.set(id, true)
   } else {
@@ -42,5 +51,17 @@ function execSelect(map: SelectedMap, id: Identity, shift = false): void {
     } else {
       map.set(id, true)
     }
+  }
+}
+
+function execSelectAll(
+  allIds: string[],
+  selectedSize: number,
+  toggle = false
+): SelectedMap {
+  if (toggle && allIds.length <= selectedSize) {
+    return new Map()
+  } else {
+    return new Map(allIds.map((id) => [id, true]))
   }
 }
