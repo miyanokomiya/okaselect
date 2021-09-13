@@ -9,7 +9,7 @@ describe('okaselect', () => {
     }
 
     describe('select', () => {
-      describe('when shift is false', () => {
+      describe('when ctrl is false', () => {
         it('should replace selected ids with new id', () => {
           const target = useSelectable(() => items)
           expect(target.getSelectedItems()).toEqual([])
@@ -23,7 +23,7 @@ describe('okaselect', () => {
         })
       })
 
-      describe('when shift is true', () => {
+      describe('when ctrl is true', () => {
         it('should add the id if it has not been saved', () => {
           const target = useSelectable(() => items)
           target.select('a', true)
@@ -43,7 +43,7 @@ describe('okaselect', () => {
     })
 
     describe('multiSelect', () => {
-      describe('when shift is false', () => {
+      describe('when ctrl is false', () => {
         it('should replace selected ids with new ids', () => {
           const target = useSelectable(() => items)
           target.select('b')
@@ -55,7 +55,7 @@ describe('okaselect', () => {
         })
       })
 
-      describe('when shift is true', () => {
+      describe('when ctrl is true', () => {
         it('should add the ids if some of the ids have not been selected yet', () => {
           const target = useSelectable(() => items)
           target.multiSelect(['a'], true)

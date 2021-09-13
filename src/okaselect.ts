@@ -21,14 +21,14 @@ export function useSelectable<T>(getItems: () => Items<T>) {
     return keys.length === 0 ? undefined : keys[keys.length - 1]
   }
 
-  function select(id: Identity, shift = false): void {
-    applySelect(selectedIds, id, shift)
+  function select(id: Identity, ctrl = false): void {
+    applySelect(selectedIds, id, ctrl)
   }
 
-  function multiSelect(ids: Identity[], shift = false): void {
+  function multiSelect(ids: Identity[], ctrl = false): void {
     const alreadySelectedIds = ids.filter((id) => selectedIds.has(id))
 
-    if (shift) {
+    if (ctrl) {
       if (alreadySelectedIds.length === ids.length) {
         // clear these ids
         alreadySelectedIds.forEach((id) => selectedIds.delete(id))
@@ -68,8 +68,8 @@ export function useSelectable<T>(getItems: () => Items<T>) {
   }
 }
 
-function applySelect(map: SelectedMap, id: Identity, shift = false): void {
-  if (!shift) {
+function applySelect(map: SelectedMap, id: Identity, ctrl = false): void {
+  if (!ctrl) {
     map.set(id, true)
   } else {
     if (map.has(id)) {
