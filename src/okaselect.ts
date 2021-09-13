@@ -33,12 +33,17 @@ export function useSelectable<T>(getItems: () => Items<T>) {
     )
   }
 
+  function clearAll(): void {
+    selectedIds.clear()
+  }
+
   return {
     getSelectedItems,
     getSelectedIds,
     getLastSelectedId,
     select,
     selectAll,
+    clearAll,
   }
 }
 

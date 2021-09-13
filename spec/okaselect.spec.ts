@@ -54,5 +54,15 @@ describe('okaselect', () => {
         expect(target.getSelectedIds()).toEqual([])
       })
     })
+
+    describe('clearAll', () => {
+      it('should clear all selections', () => {
+        const target = useSelectable(() => items)
+        target.selectAll()
+        expect(target.getSelectedIds()).toEqual(['a', 'b', 'c'])
+        target.clearAll()
+        expect(target.getSelectedIds()).toEqual([])
+      })
+    })
   })
 })
