@@ -2,7 +2,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # okaselect
-wip
+This is a convenient tool for the features of selecting.  
+You can select your items with some petterns: ctrl-select, multi-select, all-select and so on by this tool.
 
 ## usage
 
@@ -24,6 +25,7 @@ console.log(selectable.getSelectedIds()) // => ['b']
 
 selectable.select('c', true)
 console.log(selectable.getSelectedIds()) // => ['b', 'c']
+console.log(selectable.getLastSelectedId()) // => 'c'
 ```
 
 ## commnad
