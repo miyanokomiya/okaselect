@@ -12,6 +12,18 @@ yarn add okaselect
 
 ```js
 import * as okaselect from 'okaselect'
+
+const items = { a: {}, b: {}, c: {} }
+const selectable = useSelectable(() => items)
+
+selectable.select('a')
+console.log(selectable.getSelectedIds()) // => ['a']
+
+selectable.select('b')
+console.log(selectable.getSelectedIds()) // => ['b']
+
+selectable.select('c', true)
+console.log(selectable.getSelectedIds()) // => ['b', 'c']
 ```
 
 ## commnad
