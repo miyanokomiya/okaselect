@@ -12,17 +12,18 @@ yarn add okaselect
 ```
 
 ```js
-import * as okaselect from 'okaselect'
+import { useSelectable } from 'okaselect'
 
 const items = { a: {}, b: {}, c: {} }
 const selectable = useSelectable(() => items)
 
+// single select
 selectable.select('a')
 console.log(selectable.getSelectedIds()) // => ['a']
-
 selectable.select('b')
 console.log(selectable.getSelectedIds()) // => ['b']
 
+// ctrl select
 selectable.select('c', true)
 console.log(selectable.getSelectedIds()) // => ['b', 'c']
 console.log(selectable.getLastSelectedId()) // => 'c'
@@ -42,12 +43,6 @@ $ yarn test [--watch]
 
 # build
 $ yarn build
-
-# generate doc
-$ yarn doc
-
-# serve demo at localhost:1234
-$ yarn demo
 ```
 
 ## publish
