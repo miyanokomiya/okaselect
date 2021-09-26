@@ -70,6 +70,7 @@ export function useSelectable<T>(getItems: () => Items<T>) {
 
 function applySelect(map: SelectedMap, id: Identity, ctrl = false): void {
   if (!ctrl) {
+    map.clear()
     map.set(id, true)
   } else {
     if (map.has(id)) {

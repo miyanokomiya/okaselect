@@ -17,9 +17,12 @@ describe('okaselect', () => {
           target.select('a')
           expect(target.getSelectedItems()).toEqual([{ id: 'a' }])
           expect(target.getLastSelectedId()).toBe('a')
+          // replace
+          target.select('b')
+          expect(target.getSelectedItems()).toEqual([{ id: 'b' }])
           // idempotent
-          target.select('a')
-          expect(target.getSelectedItems()).toEqual([{ id: 'a' }])
+          target.select('b')
+          expect(target.getSelectedItems()).toEqual([{ id: 'b' }])
         })
       })
 
