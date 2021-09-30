@@ -3,7 +3,14 @@ export type Items<T> = { [id: Identity]: T }
 
 type SelectedMap = Map<Identity, true>
 
-export function useSelectable<T>(getItems: () => Items<T>) {
+export function useSelectable<T>(
+  getItems: () => Items<T>,
+  options: {
+    onUpdated?: () => void
+  } = {}
+) {
+  const onUpdated = options.onUpdated ?? (() => {})
+
   // this map save the order of selections
   let selectedIds: SelectedMap = new Map()
 
@@ -39,6 +46,7 @@ export function useSelectable<T>(getItems: () => Items<T>) {
 
   function select(id: Identity, ctrl = false): void {
     applySelect(selectedIds, id, ctrl)
+    onUpdated()
   }
 
   function multiSelect(ids: Identity[], ctrl = false): void {
@@ -51,8 +59,10 @@ export function useSelectable<T>(getItems: () => Items<T>) {
       } else {
         ids.forEach((id) => selectedIds.set(id, true))
       }
+      onUpdated()
     } else {
       selectedIds = new Map(ids.map((id) => [id, true]))
+      onUpdated()
     }
   }
 
@@ -62,14 +72,17 @@ export function useSelectable<T>(getItems: () => Items<T>) {
       selectedIds.size,
       toggle
     )
+    onUpdated()
   }
 
   function clear(id: Identity): void {
     selectedIds.delete(id)
+    onUpdated()
   }
 
   function clearAll(): void {
     selectedIds.clear()
+    onUpdated()
   }
 
   return {

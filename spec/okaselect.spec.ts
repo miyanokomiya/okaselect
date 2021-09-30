@@ -11,18 +11,22 @@ describe('okaselect', () => {
     describe('select', () => {
       describe('when ctrl is false', () => {
         it('should replace selected ids with new id', () => {
-          const target = useSelectable(() => items)
+          const onUpdated = jest.fn()
+          const target = useSelectable(() => items, { onUpdated })
           expect(target.getSelectedItems()).toEqual([])
           expect(target.getLastSelectedId()).toBe(undefined)
           target.select('a')
           expect(target.getSelectedItems()).toEqual([{ id: 'a' }])
           expect(target.getLastSelectedId()).toBe('a')
+          expect(onUpdated).toHaveBeenCalledTimes(1)
           // replace
           target.select('b')
           expect(target.getSelectedItems()).toEqual([{ id: 'b' }])
+          expect(onUpdated).toHaveBeenCalledTimes(2)
           // idempotent
           target.select('b')
           expect(target.getSelectedItems()).toEqual([{ id: 'b' }])
+          expect(onUpdated).toHaveBeenCalledTimes(3)
         })
       })
 
@@ -48,13 +52,17 @@ describe('okaselect', () => {
     describe('multiSelect', () => {
       describe('when ctrl is false', () => {
         it('should replace selected ids with new ids', () => {
-          const target = useSelectable(() => items)
+          const onUpdated = jest.fn()
+          const target = useSelectable(() => items, { onUpdated })
           target.select('b')
+          expect(onUpdated).toHaveBeenCalledTimes(1)
           target.multiSelect(['a', 'c'])
           expect(target.getSelectedIds()).toEqual(['a', 'c'])
+          expect(onUpdated).toHaveBeenCalledTimes(2)
           // idempotent
           target.multiSelect(['a', 'c'])
           expect(target.getSelectedIds()).toEqual(['a', 'c'])
+          expect(onUpdated).toHaveBeenCalledTimes(3)
         })
       })
 
@@ -79,9 +87,11 @@ describe('okaselect', () => {
 
     describe('selectAll', () => {
       it('should select all items', () => {
-        const target = useSelectable(() => items)
+        const onUpdated = jest.fn()
+        const target = useSelectable(() => items, { onUpdated })
         target.selectAll()
         expect(target.getSelectedIds()).toEqual(['a', 'b', 'c'])
+        expect(onUpdated).toHaveBeenCalledTimes(1)
       })
       it('should toggle select all items if toggle = true', () => {
         const target = useSelectable(() => items)
@@ -95,21 +105,25 @@ describe('okaselect', () => {
 
     describe('clear', () => {
       it('should clear the item', () => {
-        const target = useSelectable(() => items)
+        const onUpdated = jest.fn()
+        const target = useSelectable(() => items, { onUpdated })
         target.selectAll()
         expect(target.getSelectedIds()).toEqual(['a', 'b', 'c'])
         target.clear('b')
         expect(target.getSelectedIds()).toEqual(['a', 'c'])
+        expect(onUpdated).toHaveBeenCalledTimes(2)
       })
     })
 
     describe('clearAll', () => {
       it('should clear all selections', () => {
-        const target = useSelectable(() => items)
+        const onUpdated = jest.fn()
+        const target = useSelectable(() => items, { onUpdated })
         target.selectAll()
         expect(target.getSelectedIds()).toEqual(['a', 'b', 'c'])
         target.clearAll()
         expect(target.getSelectedIds()).toEqual([])
+        expect(onUpdated).toHaveBeenCalledTimes(2)
       })
     })
 
