@@ -85,6 +85,23 @@ describe('okaselect', () => {
       })
     })
 
+    describe('isAllSelected', () => {
+      it('should return true if all items are selected', () => {
+        const target = useSelectable(() => items)
+        target.selectAll()
+        expect(target.isAllSelected()).toBe(true)
+      })
+      it('should return false if some items are not selected', () => {
+        const target = useSelectable(() => items)
+        target.select('a')
+        expect(target.isAllSelected()).toBe(false)
+      })
+      it('should return false if no item exists', () => {
+        const target = useSelectable(() => ({}))
+        expect(target.isAllSelected()).toBe(false)
+      })
+    })
+
     describe('selectAll', () => {
       it('should select all items', () => {
         const onUpdated = jest.fn()

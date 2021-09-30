@@ -44,6 +44,11 @@ export function useSelectable<T>(
     return keys.length === 0 ? undefined : keys[keys.length - 1]
   }
 
+  function isAllSelected(): boolean {
+    const allIds = Object.keys(getItems())
+    return allIds.length > 0 && allIds.every((id) => selectedIds.has(id))
+  }
+
   function select(id: Identity, ctrl = false): void {
     applySelect(selectedIds, id, ctrl)
     onUpdated()
@@ -67,11 +72,11 @@ export function useSelectable<T>(
   }
 
   function selectAll(toggle = false): void {
-    selectedIds = execSelectAll(
-      Object.keys(getItems()),
-      selectedIds.size,
-      toggle
-    )
+    if (toggle && isAllSelected()) {
+      selectedIds.clear()
+    } else {
+      selectedIds = new Map(Object.keys(getItems()).map((id) => [id, true]))
+    }
     onUpdated()
   }
 
@@ -91,6 +96,8 @@ export function useSelectable<T>(
     getSelectedIds,
     getSelectedById,
     getLastSelectedId,
+    isAllSelected,
+
     select,
     multiSelect,
     selectAll,
@@ -110,17 +117,5 @@ function applySelect(map: SelectedMap, id: Identity, ctrl = false): void {
     } else {
       map.set(id, true)
     }
-  }
-}
-
-function execSelectAll(
-  allIds: string[],
-  selectedSize: number,
-  toggle = false
-): SelectedMap {
-  if (toggle && allIds.length <= selectedSize) {
-    return new Map()
-  } else {
-    return new Map(allIds.map((id) => [id, true]))
   }
 }
