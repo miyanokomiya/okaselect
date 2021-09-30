@@ -16,12 +16,14 @@ describe('src/attributeSelectable.ts', () => {
           expect(target.getSelectedById()).toEqual({})
           target.select('a', 'a_0')
           expect(target.getSelectedById()).toEqual({ a: { a_0: true } })
+          expect(target.getLastSelectedId()).toBe('a')
           expect(onUpdated).toHaveBeenCalledTimes(1)
           // replace
           target.select('a', 'a_1')
           expect(target.getSelectedById()).toEqual({ a: { a_1: true } })
           target.select('b', 'b_1')
           expect(target.getSelectedById()).toEqual({ b: { b_1: true } })
+          expect(target.getLastSelectedId()).toBe('b')
           // idempotent
           target.select('b', 'b_1')
           expect(target.getSelectedById()).toEqual({ b: { b_1: true } })
@@ -42,13 +44,33 @@ describe('src/attributeSelectable.ts', () => {
         it('should remove the status if it has been saved', () => {
           const target = useAttributeSelectable(() => items)
           target.select('a', 'a_0', true)
+          expect(target.getLastSelectedId()).toBe('a')
+
+          target.select('c', 'c_0', true)
+          expect(target.getLastSelectedId()).toBe('c')
+
+          target.select('c', 'c_1', true)
+          expect(target.getLastSelectedId()).toBe('c')
+
           target.select('a', 'a_1', true)
-          target.select('c', 'c_0', true)
+          expect(target.getLastSelectedId()).toBe('a')
+
+          target.select('c', 'c_1', true)
+          expect(target.getLastSelectedId()).toBe('a')
+
           target.select('a', 'a_0', true)
+          expect(target.getLastSelectedId()).toBe('a')
+
           target.select('c', 'c_0', true)
+          expect(target.getLastSelectedId()).toBe('a')
           expect(target.getSelectedById()).toEqual({
             a: { a_1: true },
           })
+
+          target.select('c', 'c_0', true)
+          expect(target.getLastSelectedId()).toBe('c')
+          target.select('c', 'c_0', true)
+          expect(target.getLastSelectedId()).toBe('a')
         })
       })
     })

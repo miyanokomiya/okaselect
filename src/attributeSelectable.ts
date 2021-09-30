@@ -29,6 +29,11 @@ export function useAttributeSelectable<
     )
   }
 
+  function getLastSelectedId(): string | undefined {
+    const keys = Array.from(selectedById.keys())
+    return keys.length === 0 ? undefined : keys[keys.length - 1]
+  }
+
   function select(id: string, attrKey: string, ctrl = false): void {
     applySelect(selectedById, id, attrKey, ctrl)
     onUpdated()
@@ -36,6 +41,8 @@ export function useAttributeSelectable<
 
   return {
     getSelectedById,
+    getLastSelectedId,
+
     select,
   }
 }
@@ -54,6 +61,7 @@ function applySelect(
     if (target) {
       if (target[attrKey]) {
         if (Object.keys(target).length === 1) {
+          // delete it when no attrs exist
           map.delete(id)
         } else {
           const next = { ...target }
@@ -61,6 +69,8 @@ function applySelect(
           map.set(id, next)
         }
       } else {
+        // delete and set to be a last item
+        map.delete(id)
         map.set(id, { ...target, [attrKey]: true })
       }
     } else {
