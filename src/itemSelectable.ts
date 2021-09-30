@@ -1,9 +1,7 @@
-export type Identity = string
-export type Items<T> = { [id: Identity]: T }
+type Items<T> = { [id: string]: T }
+type SelectedMap = Map<string, true>
 
-type SelectedMap = Map<Identity, true>
-
-export function useSelectable<T>(
+export function itemSelectable<T>(
   getItems: () => Items<T>,
   options: {
     onUpdated?: () => void
@@ -15,7 +13,7 @@ export function useSelectable<T>(
   let selectedIds: SelectedMap = new Map()
 
   // returned array keeps the order of selections
-  function getSelectedIds(): Identity[] {
+  function getSelectedIds(): string[] {
     return Array.from(selectedIds.keys())
   }
 
@@ -39,7 +37,7 @@ export function useSelectable<T>(
     }, {})
   }
 
-  function getLastSelectedId(): Identity | undefined {
+  function getLastSelectedId(): string | undefined {
     const keys = Array.from(selectedIds.keys())
     return keys.length === 0 ? undefined : keys[keys.length - 1]
   }
@@ -49,12 +47,12 @@ export function useSelectable<T>(
     return allIds.length > 0 && allIds.every((id) => selectedIds.has(id))
   }
 
-  function select(id: Identity, ctrl = false): void {
+  function select(id: string, ctrl = false): void {
     applySelect(selectedIds, id, ctrl)
     onUpdated()
   }
 
-  function multiSelect(ids: Identity[], ctrl = false): void {
+  function multiSelect(ids: string[], ctrl = false): void {
     const alreadySelectedIds = ids.filter((id) => selectedIds.has(id))
 
     if (ctrl) {
@@ -80,7 +78,7 @@ export function useSelectable<T>(
     onUpdated()
   }
 
-  function clear(id: Identity): void {
+  function clear(id: string): void {
     selectedIds.delete(id)
     onUpdated()
   }
@@ -105,9 +103,9 @@ export function useSelectable<T>(
     clearAll,
   }
 }
-export type Selectable = ReturnType<typeof useSelectable>
+export type ItemSelectable = ReturnType<typeof itemSelectable>
 
-function applySelect(map: SelectedMap, id: Identity, ctrl = false): void {
+function applySelect(map: SelectedMap, id: string, ctrl = false): void {
   if (!ctrl) {
     map.clear()
     map.set(id, true)
