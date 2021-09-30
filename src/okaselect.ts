@@ -11,9 +11,25 @@ export function useSelectable<T>(getItems: () => Items<T>) {
   function getSelectedIds(): Identity[] {
     return Array.from(selectedIds.keys())
   }
+
+  function getLastSelectedById(): Items<true> {
+    return getSelectedIds().reduce<Items<true>>((ret, id) => {
+      ret[id] = true
+      return ret
+    }, {})
+  }
+
   function getSelectedItems(): T[] {
     const items = getItems()
-    return Array.from(selectedIds.keys()).map((identity) => items[identity])
+    return getSelectedIds().map((identity) => items[identity])
+  }
+
+  function getLastSelectedItemsById(): Items<T> {
+    const items = getItems()
+    return getSelectedIds().reduce<Items<T>>((ret, id) => {
+      ret[id] = items[id]
+      return ret
+    }, {})
   }
 
   function getLastSelectedId(): Identity | undefined {
@@ -58,7 +74,9 @@ export function useSelectable<T>(getItems: () => Items<T>) {
 
   return {
     getSelectedItems,
+    getLastSelectedItemsById,
     getSelectedIds,
+    getLastSelectedById,
     getLastSelectedId,
     select,
     multiSelect,

@@ -112,5 +112,25 @@ describe('okaselect', () => {
         expect(target.getSelectedIds()).toEqual([])
       })
     })
+
+    describe('getLastSelectedById', () => {
+      it('should return selected ids as an object', () => {
+        const target = useSelectable(() => items)
+        target.select('a')
+        expect(target.getLastSelectedById()).toEqual({
+          a: true,
+        })
+      })
+    })
+
+    describe('getLastSelectedItemsById', () => {
+      it('should return selected items as an object', () => {
+        const target = useSelectable(() => items)
+        target.select('a')
+        expect(target.getLastSelectedItemsById()).toEqual({
+          a: { id: 'a' },
+        })
+      })
+    })
   })
 })
