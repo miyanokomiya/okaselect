@@ -12,7 +12,7 @@ export function useSelectable<T>(getItems: () => Items<T>) {
     return Array.from(selectedIds.keys())
   }
 
-  function getLastSelectedById(): Items<true> {
+  function getSelectedById(): Items<true> {
     return getSelectedIds().reduce<Items<true>>((ret, id) => {
       ret[id] = true
       return ret
@@ -24,7 +24,7 @@ export function useSelectable<T>(getItems: () => Items<T>) {
     return getSelectedIds().map((identity) => items[identity])
   }
 
-  function getLastSelectedItemsById(): Items<T> {
+  function getSelectedItemsById(): Items<T> {
     const items = getItems()
     return getSelectedIds().reduce<Items<T>>((ret, id) => {
       ret[id] = items[id]
@@ -74,9 +74,9 @@ export function useSelectable<T>(getItems: () => Items<T>) {
 
   return {
     getSelectedItems,
-    getLastSelectedItemsById,
+    getSelectedItemsById,
     getSelectedIds,
-    getLastSelectedById,
+    getSelectedById,
     getLastSelectedId,
     select,
     multiSelect,
@@ -85,6 +85,7 @@ export function useSelectable<T>(getItems: () => Items<T>) {
     clearAll,
   }
 }
+export type Selectable = ReturnType<typeof useSelectable>
 
 function applySelect(map: SelectedMap, id: Identity, ctrl = false): void {
   if (!ctrl) {

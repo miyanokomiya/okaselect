@@ -113,21 +113,21 @@ describe('okaselect', () => {
       })
     })
 
-    describe('getLastSelectedById', () => {
+    describe('getSelectedById', () => {
       it('should return selected ids as an object', () => {
         const target = useSelectable(() => items)
         target.select('a')
-        expect(target.getLastSelectedById()).toEqual({
+        expect(target.getSelectedById()).toEqual({
           a: true,
         })
       })
     })
 
-    describe('getLastSelectedItemsById', () => {
+    describe('getSelectedItemsById', () => {
       it('should return selected items as an object', () => {
         const target = useSelectable(() => items)
         target.select('a')
-        expect(target.getLastSelectedItemsById()).toEqual({
+        expect(target.getSelectedItemsById()).toEqual({
           a: { id: 'a' },
         })
       })
