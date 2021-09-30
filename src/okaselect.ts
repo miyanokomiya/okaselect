@@ -1,4 +1,4 @@
-export type Identity = string | number
+export type Identity = string
 export type Items<T> = { [id: Identity]: T }
 
 type SelectedMap = Map<Identity, true>
