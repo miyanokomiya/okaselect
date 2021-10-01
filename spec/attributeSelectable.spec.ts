@@ -78,6 +78,67 @@ describe('src/attributeSelectable.ts', () => {
       })
     })
 
+    describe('multiSelect', () => {
+      describe('when ctrl is false', () => {
+        it('should select multi attrs', () => {
+          const onUpdated = jest.fn()
+          const target = useAttributeSelectable(() => items, attrKeys, {
+            onUpdated,
+          })
+
+          target.multiSelect({ a: { x: true }, c: { y: true } })
+          expect(target.getSelected()).toEqual({
+            a: { x: true },
+            c: { y: true },
+          })
+          expect(onUpdated).toHaveBeenCalledTimes(1)
+
+          target.multiSelect({ a: { y: true } })
+          expect(target.getSelected()).toEqual({
+            a: { x: true, y: true },
+            c: { y: true },
+          })
+          expect(onUpdated).toHaveBeenCalledTimes(2)
+
+          target.multiSelect({ a: { y: true } })
+          expect(target.getSelected()).toEqual({
+            a: { x: true, y: true },
+            c: { y: true },
+          })
+          expect(onUpdated).toHaveBeenCalledTimes(3)
+        })
+      })
+
+      describe('when ctrl is true', () => {
+        it('should toggle multi attrs', () => {
+          const onUpdated = jest.fn()
+          const target = useAttributeSelectable(() => items, attrKeys, {
+            onUpdated,
+          })
+
+          target.multiSelect({ a: { x: true }, c: { y: true } }, true)
+          expect(target.getSelected()).toEqual({
+            a: { x: true },
+            c: { y: true },
+          })
+          expect(onUpdated).toHaveBeenCalledTimes(1)
+
+          target.multiSelect({ a: { x: true, y: true } }, true)
+          expect(target.getSelected()).toEqual({
+            a: { x: true, y: true },
+            c: { y: true },
+          })
+          expect(onUpdated).toHaveBeenCalledTimes(2)
+
+          target.multiSelect({ a: { x: true, y: true } }, true)
+          expect(target.getSelected()).toEqual({
+            c: { y: true },
+          })
+          expect(onUpdated).toHaveBeenCalledTimes(3)
+        })
+      })
+    })
+
     describe('isAllSelected', () => {
       it('should return true if all attrs of each items are selecte', () => {
         const target = useAttributeSelectable(() => items, attrKeys)

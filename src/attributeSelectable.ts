@@ -41,6 +41,11 @@ export function useAttributeSelectable<T, K extends Attrs>(
     onUpdated()
   }
 
+  function multiSelect(val: Items<K>, ctrl = false): void {
+    applyMultiSelect(selectedMap, val, ctrl)
+    onUpdated()
+  }
+
   function selectAll(toggle = false): void {
     if (toggle && isAllSelected()) {
       selectedMap.clear()
@@ -71,6 +76,7 @@ export function useAttributeSelectable<T, K extends Attrs>(
     isAllSelected,
 
     select,
+    multiSelect,
     selectAll,
     clear,
     clearAll,
@@ -90,14 +96,9 @@ function applySelect(
     const target = map.get(id)
     if (target) {
       if (target[attrKey]) {
-        if (Object.keys(target).length === 1) {
-          // delete it when no attrs exist
-          map.delete(id)
-        } else {
-          const next = { ...target }
-          delete next[attrKey]
-          map.set(id, next)
-        }
+        const next = { ...target }
+        delete next[attrKey]
+        setOrDeleteItem(map, id, next)
       } else {
         // delete and set to be a last item
         map.delete(id)
@@ -107,6 +108,67 @@ function applySelect(
       map.set(id, { [attrKey]: true })
     }
   }
+}
+
+function applyMultiSelect(
+  map: SelectedAttrMap<Attrs>,
+  val: Items<Attrs>,
+  ctrl = false
+): void {
+  if (!ctrl) {
+    Object.entries(val).forEach(([id, attrs]) => {
+      map.set(id, { ...(map.get(id) ?? {}), ...attrs })
+    })
+  } else {
+    if (isAttrsSelected(map, val)) {
+      // clear the attrs if all of its have been selected already
+      Object.entries(val).forEach(([id, attrs]) => {
+        setOrDeleteItem(map, id, dropAttrs(map.get(id), attrs))
+      })
+    } else {
+      // select the attrs if some attrs have not been selected yet
+      Object.entries(val).forEach(([id, attrs]) => {
+        map.set(id, mergeAttrs(map.get(id), attrs))
+      })
+    }
+  }
+}
+
+function setOrDeleteItem(
+  map: SelectedAttrMap<Attrs>,
+  id: string,
+  attrs: Attrs
+): void {
+  if (Object.keys(attrs).length > 0) {
+    map.set(id, attrs)
+  } else {
+    map.delete(id)
+  }
+}
+
+function dropAttrs(src: Attrs | undefined, val: Attrs): Attrs {
+  return src
+    ? Object.keys(src).reduce<Attrs>((p, key) => {
+        if (!val[key]) {
+          p[key] = true
+        }
+        return p
+      }, {})
+    : {}
+}
+
+function mergeAttrs(src: Attrs | undefined, val: Attrs): Attrs {
+  return src ? { ...src, ...val } : val
+}
+
+function isAttrsSelected(
+  map: SelectedAttrMap<Attrs>,
+  val: Items<Attrs>
+): boolean {
+  return Object.entries(val).every(([id, attrs]) => {
+    const target = map.get(id)
+    return target && isAllAttrsSelected(Object.keys(attrs), target)
+  })
 }
 
 function applyDelete(
