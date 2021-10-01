@@ -13,19 +13,19 @@ describe('okaselect', () => {
         it('should replace selected ids with new id', () => {
           const onUpdated = jest.fn()
           const target = itemSelectable(() => items, { onUpdated })
-          expect(target.getSelectedItems()).toEqual([])
-          expect(target.getLastSelectedId()).toBe(undefined)
+          expect(target.getSelectedItemList()).toEqual([])
+          expect(target.getLastSelected()).toBe(undefined)
           target.select('a')
-          expect(target.getSelectedItems()).toEqual([{ id: 'a' }])
-          expect(target.getLastSelectedId()).toBe('a')
+          expect(target.getSelectedItemList()).toEqual([{ id: 'a' }])
+          expect(target.getLastSelected()).toBe('a')
           expect(onUpdated).toHaveBeenCalledTimes(1)
           // replace
           target.select('b')
-          expect(target.getSelectedItems()).toEqual([{ id: 'b' }])
+          expect(target.getSelectedItemList()).toEqual([{ id: 'b' }])
           expect(onUpdated).toHaveBeenCalledTimes(2)
           // idempotent
           target.select('b')
-          expect(target.getSelectedItems()).toEqual([{ id: 'b' }])
+          expect(target.getSelectedItemList()).toEqual([{ id: 'b' }])
           expect(onUpdated).toHaveBeenCalledTimes(3)
         })
       })
@@ -34,17 +34,20 @@ describe('okaselect', () => {
         it('should add the id if it has not been saved', () => {
           const target = itemSelectable(() => items)
           target.select('a', true)
-          expect(target.getSelectedItems()).toEqual([{ id: 'a' }])
+          expect(target.getSelectedItemList()).toEqual([{ id: 'a' }])
           target.select('c', true)
-          expect(target.getSelectedItems()).toEqual([{ id: 'a' }, { id: 'c' }])
-          expect(target.getSelectedIds()).toEqual(['a', 'c'])
+          expect(target.getSelectedItemList()).toEqual([
+            { id: 'a' },
+            { id: 'c' },
+          ])
+          expect(target.getSelectedList()).toEqual(['a', 'c'])
         })
         it('should remove the id if it has been saved', () => {
           const target = itemSelectable(() => items)
           target.select('a', true)
           target.select('c', true)
           target.select('a', true)
-          expect(target.getSelectedItems()).toEqual([{ id: 'c' }])
+          expect(target.getSelectedItemList()).toEqual([{ id: 'c' }])
         })
       })
     })
@@ -57,11 +60,11 @@ describe('okaselect', () => {
           target.select('b')
           expect(onUpdated).toHaveBeenCalledTimes(1)
           target.multiSelect(['a', 'c'])
-          expect(target.getSelectedIds()).toEqual(['a', 'c'])
+          expect(target.getSelectedList()).toEqual(['a', 'c'])
           expect(onUpdated).toHaveBeenCalledTimes(2)
           // idempotent
           target.multiSelect(['a', 'c'])
-          expect(target.getSelectedIds()).toEqual(['a', 'c'])
+          expect(target.getSelectedList()).toEqual(['a', 'c'])
           expect(onUpdated).toHaveBeenCalledTimes(3)
         })
       })
@@ -70,17 +73,17 @@ describe('okaselect', () => {
         it('should add the ids if some of the ids have not been selected yet', () => {
           const target = itemSelectable(() => items)
           target.multiSelect(['a'], true)
-          expect(target.getSelectedIds()).toEqual(['a'])
+          expect(target.getSelectedList()).toEqual(['a'])
           target.multiSelect(['b'], true)
-          expect(target.getSelectedIds()).toEqual(['a', 'b'])
+          expect(target.getSelectedList()).toEqual(['a', 'b'])
           target.multiSelect(['a', 'c'], true)
-          expect(target.getSelectedIds()).toEqual(['a', 'b', 'c'])
+          expect(target.getSelectedList()).toEqual(['a', 'b', 'c'])
         })
         it('should remove the ids if all of its have been selected already', () => {
           const target = itemSelectable(() => items)
           target.multiSelect(['a', 'b', 'c'], true)
           target.multiSelect(['a', 'c'], true)
-          expect(target.getSelectedIds()).toEqual(['b'])
+          expect(target.getSelectedList()).toEqual(['b'])
         })
       })
     })
@@ -107,16 +110,16 @@ describe('okaselect', () => {
         const onUpdated = jest.fn()
         const target = itemSelectable(() => items, { onUpdated })
         target.selectAll()
-        expect(target.getSelectedIds()).toEqual(['a', 'b', 'c'])
+        expect(target.getSelectedList()).toEqual(['a', 'b', 'c'])
         expect(onUpdated).toHaveBeenCalledTimes(1)
       })
       it('should toggle select all items if toggle = true', () => {
         const target = itemSelectable(() => items)
         target.select('a')
         target.selectAll(true)
-        expect(target.getSelectedIds()).toEqual(['a', 'b', 'c'])
+        expect(target.getSelectedList()).toEqual(['a', 'b', 'c'])
         target.selectAll(true)
-        expect(target.getSelectedIds()).toEqual([])
+        expect(target.getSelectedList()).toEqual([])
       })
     })
 
@@ -125,9 +128,9 @@ describe('okaselect', () => {
         const onUpdated = jest.fn()
         const target = itemSelectable(() => items, { onUpdated })
         target.selectAll()
-        expect(target.getSelectedIds()).toEqual(['a', 'b', 'c'])
+        expect(target.getSelectedList()).toEqual(['a', 'b', 'c'])
         target.clear('b')
-        expect(target.getSelectedIds()).toEqual(['a', 'c'])
+        expect(target.getSelectedList()).toEqual(['a', 'c'])
         expect(onUpdated).toHaveBeenCalledTimes(2)
       })
     })
@@ -137,28 +140,28 @@ describe('okaselect', () => {
         const onUpdated = jest.fn()
         const target = itemSelectable(() => items, { onUpdated })
         target.selectAll()
-        expect(target.getSelectedIds()).toEqual(['a', 'b', 'c'])
+        expect(target.getSelectedList()).toEqual(['a', 'b', 'c'])
         target.clearAll()
-        expect(target.getSelectedIds()).toEqual([])
+        expect(target.getSelectedList()).toEqual([])
         expect(onUpdated).toHaveBeenCalledTimes(2)
       })
     })
 
-    describe('getSelectedById', () => {
+    describe('getSelected', () => {
       it('should return selected ids as an object', () => {
         const target = itemSelectable(() => items)
         target.select('a')
-        expect(target.getSelectedById()).toEqual({
+        expect(target.getSelected()).toEqual({
           a: true,
         })
       })
     })
 
-    describe('getSelectedItemsById', () => {
+    describe('getSelectedItems', () => {
       it('should return selected items as an object', () => {
         const target = itemSelectable(() => items)
         target.select('a')
-        expect(target.getSelectedItemsById()).toEqual({
+        expect(target.getSelectedItems()).toEqual({
           a: { id: 'a' },
         })
       })

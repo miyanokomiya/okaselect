@@ -1,26 +1,16 @@
-type Attributes = { [key: string]: true }
-type Items<T> = { [id: string]: T }
-type SelectedMap<SelectedAttributes extends Attributes> = Map<
-  string,
-  SelectedAttributes
->
+import type { Items, SelectedAttrMap, Attrs, Options } from './core'
 
-export function useAttributeSelectable<
-  T,
-  SelectedAttributes extends Attributes
->(
+export function useAttributeSelectable<T, K extends Attrs>(
   getItems: () => Items<T>,
-  options: {
-    onUpdated?: () => void
-  } = {}
+  options: Options = {}
 ) {
   const onUpdated = options.onUpdated ?? (() => {})
 
   // this map save the order of selections
-  const selectedById: SelectedMap<SelectedAttributes> = new Map()
+  const selectedById: SelectedAttrMap<K> = new Map()
 
-  function getSelectedById(): Items<SelectedAttributes> {
-    return Array.from(selectedById.entries()).reduce<Items<SelectedAttributes>>(
+  function getSelected(): Items<K> {
+    return Array.from(selectedById.entries()).reduce<Items<K>>(
       (ret, [key, attrs]) => {
         ret[key] = attrs
         return ret
@@ -29,7 +19,7 @@ export function useAttributeSelectable<
     )
   }
 
-  function getLastSelectedId(): string | undefined {
+  function getLastSelected(): string | undefined {
     const keys = Array.from(selectedById.keys())
     return keys.length === 0 ? undefined : keys[keys.length - 1]
   }
@@ -40,15 +30,15 @@ export function useAttributeSelectable<
   }
 
   return {
-    getSelectedById,
-    getLastSelectedId,
+    getSelected,
+    getLastSelected,
 
     select,
   }
 }
 
 function applySelect(
-  map: SelectedMap<any>,
+  map: SelectedAttrMap<any>,
   id: string,
   attrKey: string,
   ctrl = false

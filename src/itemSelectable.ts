@@ -1,43 +1,40 @@
-type Items<T> = { [id: string]: T }
-type SelectedMap = Map<string, true>
+import type { Items, SelectedItemMap, Options } from './core'
 
 export function itemSelectable<T>(
   getItems: () => Items<T>,
-  options: {
-    onUpdated?: () => void
-  } = {}
+  options: Options = {}
 ) {
   const onUpdated = options.onUpdated ?? (() => {})
 
   // this map save the order of selections
-  let selectedIds: SelectedMap = new Map()
+  let selectedIds: SelectedItemMap = new Map()
 
   // returned array keeps the order of selections
-  function getSelectedIds(): string[] {
+  function getSelectedList(): string[] {
     return Array.from(selectedIds.keys())
   }
 
-  function getSelectedById(): Items<true> {
-    return getSelectedIds().reduce<Items<true>>((ret, id) => {
+  function getSelected(): Items<true> {
+    return getSelectedList().reduce<Items<true>>((ret, id) => {
       ret[id] = true
       return ret
     }, {})
   }
 
-  function getSelectedItems(): T[] {
+  function getSelectedItemList(): T[] {
     const items = getItems()
-    return getSelectedIds().map((identity) => items[identity])
+    return getSelectedList().map((identity) => items[identity])
   }
 
-  function getSelectedItemsById(): Items<T> {
+  function getSelectedItems(): Items<T> {
     const items = getItems()
-    return getSelectedIds().reduce<Items<T>>((ret, id) => {
+    return getSelectedList().reduce<Items<T>>((ret, id) => {
       ret[id] = items[id]
       return ret
     }, {})
   }
 
-  function getLastSelectedId(): string | undefined {
+  function getLastSelected(): string | undefined {
     const keys = Array.from(selectedIds.keys())
     return keys.length === 0 ? undefined : keys[keys.length - 1]
   }
@@ -89,11 +86,11 @@ export function itemSelectable<T>(
   }
 
   return {
+    getSelected,
+    getSelectedList,
+    getSelectedItemList,
     getSelectedItems,
-    getSelectedItemsById,
-    getSelectedIds,
-    getSelectedById,
-    getLastSelectedId,
+    getLastSelected,
     isAllSelected,
 
     select,
@@ -105,7 +102,7 @@ export function itemSelectable<T>(
 }
 export type ItemSelectable = ReturnType<typeof itemSelectable>
 
-function applySelect(map: SelectedMap, id: string, ctrl = false): void {
+function applySelect(map: SelectedItemMap, id: string, ctrl = false): void {
   if (!ctrl) {
     map.clear()
     map.set(id, true)
