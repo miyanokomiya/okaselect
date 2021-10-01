@@ -60,6 +60,11 @@ export function useAttributeSelectable<T, K extends Attrs>(
     onUpdated()
   }
 
+  function clearAll(): void {
+    selectedMap.clear()
+    onUpdated()
+  }
+
   return {
     getSelected,
     getLastSelected,
@@ -68,6 +73,7 @@ export function useAttributeSelectable<T, K extends Attrs>(
     select,
     selectAll,
     clear,
+    clearAll,
   }
 }
 

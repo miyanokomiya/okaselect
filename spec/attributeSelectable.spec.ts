@@ -96,31 +96,42 @@ describe('src/attributeSelectable.ts', () => {
 
     describe('selectAll', () => {
       it('should select all', () => {
-        const target = useAttributeSelectable(() => items, attrKeys)
+        const onUpdated = jest.fn()
+        const target = useAttributeSelectable(() => items, attrKeys, {
+          onUpdated,
+        })
         target.selectAll()
         expect(target.getSelected()).toEqual({
           a: { x: true, y: true },
           b: { x: true, y: true },
           c: { x: true, y: true },
         })
+        expect(onUpdated).toHaveBeenCalledTimes(1)
       })
       it('should clear all selected if toggle = true and all attrs have been selected already', () => {
-        const target = useAttributeSelectable(() => items, attrKeys)
+        const onUpdated = jest.fn()
+        const target = useAttributeSelectable(() => items, attrKeys, {
+          onUpdated,
+        })
         target.selectAll()
+        expect(onUpdated).toHaveBeenCalledTimes(1)
         target.clear('a', 'y')
         expect(target.getSelected()).toEqual({
           a: { x: true },
           b: { x: true, y: true },
           c: { x: true, y: true },
         })
+        expect(onUpdated).toHaveBeenCalledTimes(2)
         target.selectAll(true)
         expect(target.getSelected()).toEqual({
           a: { x: true, y: true },
           b: { x: true, y: true },
           c: { x: true, y: true },
         })
+        expect(onUpdated).toHaveBeenCalledTimes(3)
         target.selectAll(true)
         expect(target.getSelected()).toEqual({})
+        expect(onUpdated).toHaveBeenCalledTimes(4)
       })
     })
 
@@ -154,6 +165,26 @@ describe('src/attributeSelectable.ts', () => {
         })
         expect(onUpdated).toHaveBeenCalledTimes(2)
         expect(target.getLastSelected()).toBe('a')
+      })
+    })
+
+    describe('clearAll', () => {
+      it('should clear all selected', () => {
+        const onUpdated = jest.fn()
+        const target = useAttributeSelectable(() => items, attrKeys, {
+          onUpdated,
+        })
+        target.selectAll()
+        expect(target.getSelected()).toEqual({
+          a: { x: true, y: true },
+          b: { x: true, y: true },
+          c: { x: true, y: true },
+        })
+        expect(onUpdated).toHaveBeenCalledTimes(1)
+
+        target.clearAll()
+        expect(target.getSelected()).toEqual({})
+        expect(onUpdated).toHaveBeenCalledTimes(2)
       })
     })
   })
