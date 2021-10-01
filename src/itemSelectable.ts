@@ -7,11 +7,11 @@ export function itemSelectable<T>(
   const onUpdated = options.onUpdated ?? (() => {})
 
   // this map save the order of selections
-  let selectedIds: SelectedItemMap = new Map()
+  let selectedMap: SelectedItemMap = new Map()
 
   // returned array keeps the order of selections
   function getSelectedList(): string[] {
-    return Array.from(selectedIds.keys())
+    return Array.from(selectedMap.keys())
   }
 
   function getSelected(): Items<true> {
@@ -35,53 +35,53 @@ export function itemSelectable<T>(
   }
 
   function getLastSelected(): string | undefined {
-    const keys = Array.from(selectedIds.keys())
+    const keys = Array.from(selectedMap.keys())
     return keys.length === 0 ? undefined : keys[keys.length - 1]
   }
 
   function isAllSelected(): boolean {
     const allIds = Object.keys(getItems())
-    return allIds.length > 0 && allIds.every((id) => selectedIds.has(id))
+    return allIds.length > 0 && allIds.every((id) => selectedMap.has(id))
   }
 
   function select(id: string, ctrl = false): void {
-    applySelect(selectedIds, id, ctrl)
+    applySelect(selectedMap, id, ctrl)
     onUpdated()
   }
 
   function multiSelect(ids: string[], ctrl = false): void {
-    const alreadySelectedIds = ids.filter((id) => selectedIds.has(id))
+    const alreadySelectedIds = ids.filter((id) => selectedMap.has(id))
 
     if (ctrl) {
       if (alreadySelectedIds.length === ids.length) {
         // clear these ids
-        alreadySelectedIds.forEach((id) => selectedIds.delete(id))
+        alreadySelectedIds.forEach((id) => selectedMap.delete(id))
       } else {
-        ids.forEach((id) => selectedIds.set(id, true))
+        ids.forEach((id) => selectedMap.set(id, true))
       }
       onUpdated()
     } else {
-      selectedIds = new Map(ids.map((id) => [id, true]))
+      selectedMap = new Map(ids.map((id) => [id, true]))
       onUpdated()
     }
   }
 
   function selectAll(toggle = false): void {
     if (toggle && isAllSelected()) {
-      selectedIds.clear()
+      selectedMap.clear()
     } else {
-      selectedIds = new Map(Object.keys(getItems()).map((id) => [id, true]))
+      selectedMap = new Map(Object.keys(getItems()).map((id) => [id, true]))
     }
     onUpdated()
   }
 
   function clear(id: string): void {
-    selectedIds.delete(id)
+    selectedMap.delete(id)
     onUpdated()
   }
 
   function clearAll(): void {
-    selectedIds.clear()
+    selectedMap.clear()
     onUpdated()
   }
 

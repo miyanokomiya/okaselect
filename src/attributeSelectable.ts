@@ -7,10 +7,10 @@ export function useAttributeSelectable<T, K extends Attrs>(
   const onUpdated = options.onUpdated ?? (() => {})
 
   // this map save the order of selections
-  const selectedById: SelectedAttrMap<K> = new Map()
+  const selectedMap: SelectedAttrMap<K> = new Map()
 
   function getSelected(): Items<K> {
-    return Array.from(selectedById.entries()).reduce<Items<K>>(
+    return Array.from(selectedMap.entries()).reduce<Items<K>>(
       (ret, [key, attrs]) => {
         ret[key] = attrs
         return ret
@@ -20,12 +20,17 @@ export function useAttributeSelectable<T, K extends Attrs>(
   }
 
   function getLastSelected(): string | undefined {
-    const keys = Array.from(selectedById.keys())
+    const keys = Array.from(selectedMap.keys())
     return keys.length === 0 ? undefined : keys[keys.length - 1]
   }
 
   function select(id: string, attrKey: string, ctrl = false): void {
-    applySelect(selectedById, id, attrKey, ctrl)
+    applySelect(selectedMap, id, attrKey, ctrl)
+    onUpdated()
+  }
+
+  function clear(id: string, attrKey: string): void {
+    applyDelete(selectedMap, id, attrKey)
     onUpdated()
   }
 
@@ -34,11 +39,12 @@ export function useAttributeSelectable<T, K extends Attrs>(
     getLastSelected,
 
     select,
+    clear,
   }
 }
 
 function applySelect(
-  map: SelectedAttrMap<any>,
+  map: SelectedAttrMap<Attrs>,
   id: string,
   attrKey: string,
   ctrl = false
@@ -65,6 +71,24 @@ function applySelect(
       }
     } else {
       map.set(id, { [attrKey]: true })
+    }
+  }
+}
+
+function applyDelete(
+  map: SelectedAttrMap<Attrs>,
+  id: string,
+  attrKey: string
+): void {
+  const target = map.get(id)
+  if (target) {
+    if (Object.keys(target).length === 1) {
+      // delete it when no attrs exist
+      map.delete(id)
+    } else {
+      const next = { ...target }
+      delete next[attrKey]
+      map.set(id, next)
     }
   }
 }

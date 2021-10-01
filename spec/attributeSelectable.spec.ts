@@ -74,5 +74,36 @@ describe('src/attributeSelectable.ts', () => {
         })
       })
     })
+
+    describe('clear', () => {
+      it('should clear the attr', () => {
+        const onUpdated = jest.fn()
+        const target = useAttributeSelectable(() => items, { onUpdated })
+        target.select('a', 'a_0', true)
+        target.select('a', 'a_1', true)
+        target.select('c', 'c_0', true)
+        expect(target.getSelected()).toEqual({
+          a: { a_0: true, a_1: true },
+          c: { c_0: true },
+        })
+        expect(target.getLastSelected()).toBe('c')
+
+        onUpdated.mockClear()
+        target.clear('a', 'a_1')
+        expect(target.getSelected()).toEqual({
+          a: { a_0: true },
+          c: { c_0: true },
+        })
+        expect(onUpdated).toHaveBeenCalledTimes(1)
+        expect(target.getLastSelected()).toBe('c')
+
+        target.clear('c', 'c_0')
+        expect(target.getSelected()).toEqual({
+          a: { a_0: true },
+        })
+        expect(onUpdated).toHaveBeenCalledTimes(2)
+        expect(target.getLastSelected()).toBe('a')
+      })
+    })
   })
 })
