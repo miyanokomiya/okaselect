@@ -89,6 +89,15 @@ export function useItemSelectable<T>(
     onUpdated()
   }
 
+  function createSnapshot(): [string, true][] {
+    return Array.from(selectedMap.entries())
+  }
+
+  function restore(snapshot: [string, true][]) {
+    selectedMap = new Map(snapshot)
+    onUpdated()
+  }
+
   return {
     getSelected,
     getSelectedList,
@@ -103,6 +112,8 @@ export function useItemSelectable<T>(
     selectAll,
     clear,
     clearAll,
+    createSnapshot,
+    restore,
   }
 }
 export type ItemSelectable = ReturnType<typeof useItemSelectable>

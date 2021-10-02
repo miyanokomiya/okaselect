@@ -287,7 +287,10 @@ describe('src/attributeSelectable.ts', () => {
 
     describe('createSnapshot & restore', () => {
       it('should create snapshot and restore from it', () => {
-        const target = useAttributeSelectable(() => items, attrKeys)
+        const onUpdated = jest.fn()
+        const target = useAttributeSelectable(() => items, attrKeys, {
+          onUpdated,
+        })
         target.selectAll()
         const snapshot = target.createSnapshot()
         expect(snapshot).toEqual([
@@ -297,12 +300,14 @@ describe('src/attributeSelectable.ts', () => {
         ])
         target.clearAll()
         expect(target.getSelected()).toEqual({})
+        onUpdated.mockClear()
         target.restore(snapshot)
         expect(target.getSelected()).toEqual({
           a: { x: true, y: true },
           b: { x: true, y: true },
           c: { x: true, y: true },
         })
+        expect(onUpdated).toHaveBeenCalledTimes(1)
       })
     })
   })

@@ -88,6 +88,7 @@ export function useAttributeSelectable<T, K extends Attrs>(
 
   function restore(snapshot: [string, K][]) {
     selectedMap = new Map(snapshot)
+    onUpdated()
   }
 
   return {

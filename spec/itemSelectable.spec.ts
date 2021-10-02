@@ -175,5 +175,29 @@ describe('okaselect', () => {
         })
       })
     })
+
+    describe('createSnapshot & restore', () => {
+      it('should create snapshot and restore from it', () => {
+        const onUpdated = jest.fn()
+        const target = useItemSelectable(() => items, { onUpdated })
+        target.selectAll()
+        const snapshot = target.createSnapshot()
+        expect(snapshot).toEqual([
+          ['a', true],
+          ['b', true],
+          ['c', true],
+        ])
+        target.clearAll()
+        expect(target.getSelected()).toEqual({})
+        onUpdated.mockClear()
+        target.restore(snapshot)
+        expect(target.getSelected()).toEqual({
+          a: true,
+          b: true,
+          c: true,
+        })
+        expect(onUpdated).toHaveBeenCalledTimes(1)
+      })
+    })
   })
 })
