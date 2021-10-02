@@ -25,6 +25,14 @@ export function useAttributeSelectable<T, K extends Attrs>(
     return keys.length === 0 ? undefined : keys[keys.length - 1]
   }
 
+  function getAllAttrsSelected(): string[] {
+    return Array.from(selectedMap.entries())
+      .filter(([, attrs]) => {
+        return isAllAttrsSelected(attrKeys, attrs)
+      })
+      .map(([key]) => key)
+  }
+
   function isAllSelected(): boolean {
     const allIds = Object.keys(getItems())
     return (
@@ -74,17 +82,29 @@ export function useAttributeSelectable<T, K extends Attrs>(
     onUpdated()
   }
 
+  function createSnapshot(): [string, K][] {
+    return Array.from(selectedMap.entries())
+  }
+
+  function restore(snapshot: [string, K][]) {
+    selectedMap = new Map(snapshot)
+  }
+
   return {
     getSelected,
     getLastSelected,
+    getAllAttrsSelected,
     isAllSelected,
     isAnySelected,
+    isAttrsSelected: (val: Items<K>) => isAttrsSelected(selectedMap, val),
 
     select,
     multiSelect,
     selectAll,
     clear,
     clearAll,
+    createSnapshot,
+    restore,
   }
 }
 

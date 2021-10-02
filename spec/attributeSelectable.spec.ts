@@ -139,6 +139,21 @@ describe('src/attributeSelectable.ts', () => {
       })
     })
 
+    describe('getAllAttrsSelected', () => {
+      it('should return ids of items whose all attrs have been selected', () => {
+        const target = useAttributeSelectable(() => items, attrKeys)
+        expect(target.getAllAttrsSelected()).toEqual([])
+        target.select('a', 'x', true)
+        expect(target.getAllAttrsSelected()).toEqual([])
+        target.select('a', 'y', true)
+        expect(target.getAllAttrsSelected()).toEqual(['a'])
+        target.select('c', 'x', true)
+        expect(target.getAllAttrsSelected()).toEqual(['a'])
+        target.select('c', 'y', true)
+        expect(target.getAllAttrsSelected()).toEqual(['a', 'c'])
+      })
+    })
+
     describe('isAllSelected', () => {
       it('should return true if all attrs of each items have been selected', () => {
         const target = useAttributeSelectable(() => items, attrKeys)
@@ -161,6 +176,18 @@ describe('src/attributeSelectable.ts', () => {
         expect(target.isAnySelected()).toBe(false)
         target.select('a', 'x')
         expect(target.isAnySelected()).toBe(true)
+      })
+    })
+
+    describe('isAttrsSelected', () => {
+      it('should return true if all attrs in the arg have been selected', () => {
+        const target = useAttributeSelectable(() => items, attrKeys)
+        expect(target.isAttrsSelected({ a: { x: true, y: true } })).toBe(false)
+        target.select('a', 'x', true)
+        target.select('c', 'x', true)
+        expect(target.isAttrsSelected({ a: { x: true, y: true } })).toBe(false)
+        target.select('a', 'y', true)
+        expect(target.isAttrsSelected({ a: { x: true, y: true } })).toBe(true)
       })
     })
 
@@ -255,6 +282,27 @@ describe('src/attributeSelectable.ts', () => {
         target.clearAll()
         expect(target.getSelected()).toEqual({})
         expect(onUpdated).toHaveBeenCalledTimes(2)
+      })
+    })
+
+    describe('createSnapshot & restore', () => {
+      it('should create snapshot and restore from it', () => {
+        const target = useAttributeSelectable(() => items, attrKeys)
+        target.selectAll()
+        const snapshot = target.createSnapshot()
+        expect(snapshot).toEqual([
+          ['a', { x: true, y: true }],
+          ['b', { x: true, y: true }],
+          ['c', { x: true, y: true }],
+        ])
+        target.clearAll()
+        expect(target.getSelected()).toEqual({})
+        target.restore(snapshot)
+        expect(target.getSelected()).toEqual({
+          a: { x: true, y: true },
+          b: { x: true, y: true },
+          c: { x: true, y: true },
+        })
       })
     })
   })
