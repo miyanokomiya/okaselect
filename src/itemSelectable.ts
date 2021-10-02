@@ -1,6 +1,6 @@
 import type { Items, SelectedItemMap, Options } from './core'
 
-export function itemSelectable<T>(
+export function useItemSelectable<T>(
   getItems: () => Items<T>,
   options: Options = {}
 ) {
@@ -105,7 +105,7 @@ export function itemSelectable<T>(
     clearAll,
   }
 }
-export type ItemSelectable = ReturnType<typeof itemSelectable>
+export type ItemSelectable = ReturnType<typeof useItemSelectable>
 
 function applySelect(map: SelectedItemMap, id: string, ctrl = false): void {
   if (!ctrl) {
