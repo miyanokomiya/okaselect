@@ -105,6 +105,15 @@ describe('okaselect', () => {
       })
     })
 
+    describe('isAnySelected', () => {
+      it('should return true if any attrs have been selected', () => {
+        const target = itemSelectable(() => items)
+        expect(target.isAnySelected()).toBe(false)
+        target.select('a')
+        expect(target.isAnySelected()).toBe(true)
+      })
+    })
+
     describe('selectAll', () => {
       it('should select all items', () => {
         const onUpdated = jest.fn()

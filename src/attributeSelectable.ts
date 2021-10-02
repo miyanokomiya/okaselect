@@ -36,6 +36,10 @@ export function useAttributeSelectable<T, K extends Attrs>(
     )
   }
 
+  function isAnySelected(): boolean {
+    return !!getLastSelected()
+  }
+
   function select(id: string, attrKey: string, ctrl = false): void {
     applySelect(selectedMap, id, attrKey, ctrl)
     onUpdated()
@@ -74,6 +78,7 @@ export function useAttributeSelectable<T, K extends Attrs>(
     getSelected,
     getLastSelected,
     isAllSelected,
+    isAnySelected,
 
     select,
     multiSelect,

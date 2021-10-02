@@ -140,7 +140,7 @@ describe('src/attributeSelectable.ts', () => {
     })
 
     describe('isAllSelected', () => {
-      it('should return true if all attrs of each items are selecte', () => {
+      it('should return true if all attrs of each items have been selected', () => {
         const target = useAttributeSelectable(() => items, attrKeys)
         expect(target.isAllSelected()).toBe(false)
         target.select('a', 'x', true)
@@ -152,6 +152,15 @@ describe('src/attributeSelectable.ts', () => {
         expect(target.isAllSelected()).toBe(false)
         target.select('c', 'y', true)
         expect(target.isAllSelected()).toBe(true)
+      })
+    })
+
+    describe('isAnySelected', () => {
+      it('should return true if any attrs have been selected', () => {
+        const target = useAttributeSelectable(() => items, attrKeys)
+        expect(target.isAnySelected()).toBe(false)
+        target.select('a', 'x')
+        expect(target.isAnySelected()).toBe(true)
       })
     })
 

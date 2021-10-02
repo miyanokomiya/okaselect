@@ -44,6 +44,10 @@ export function itemSelectable<T>(
     return allIds.length > 0 && allIds.every((id) => selectedMap.has(id))
   }
 
+  function isAnySelected(): boolean {
+    return !!getLastSelected()
+  }
+
   function select(id: string, ctrl = false): void {
     applySelect(selectedMap, id, ctrl)
     onUpdated()
@@ -92,6 +96,7 @@ export function itemSelectable<T>(
     getSelectedItems,
     getLastSelected,
     isAllSelected,
+    isAnySelected,
 
     select,
     multiSelect,
