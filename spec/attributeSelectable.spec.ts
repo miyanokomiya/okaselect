@@ -95,15 +95,13 @@ describe('src/attributeSelectable.ts', () => {
 
           target.multiSelect({ a: { y: true } })
           expect(target.getSelected()).toEqual({
-            a: { x: true, y: true },
-            c: { y: true },
+            a: { y: true },
           })
           expect(onUpdated).toHaveBeenCalledTimes(2)
 
           target.multiSelect({ a: { y: true } })
           expect(target.getSelected()).toEqual({
-            a: { x: true, y: true },
-            c: { y: true },
+            a: { y: true },
           })
           expect(onUpdated).toHaveBeenCalledTimes(3)
         })

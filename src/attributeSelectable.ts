@@ -142,6 +142,7 @@ function applyMultiSelect(
   ctrl = false
 ): void {
   if (!ctrl) {
+    map.clear()
     Object.entries(val).forEach(([id, attrs]) => {
       map.set(id, { ...(map.get(id) ?? {}), ...attrs })
     })
