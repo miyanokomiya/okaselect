@@ -1,15 +1,20 @@
-import type { Items, SelectedAttrMap, Attrs, Options } from './core'
+import type {
+  Items,
+  GenericsAttrs,
+  Options,
+  SelectedGenericsAttrMap,
+} from './core'
 import * as core from './core'
 
-export function useAttributeSelectable<T, K extends Attrs>(
+export function useGenericsSelectable<T, K extends GenericsAttrs>(
   getItems: () => Items<T>,
-  attrKeys: string[],
+  getItemType: (item: T) => string,
+  attrKeys: { [type: string]: string[] },
   options: Options = {}
 ) {
   const onUpdated = options.onUpdated ?? (() => {})
 
-  // this map save the order of selections
-  let selectedMap: SelectedAttrMap<K> = new Map()
+  let selectedMap: SelectedGenericsAttrMap<K> = new Map()
 
   function getSelected(): Items<K> {
     return Array.from(selectedMap.entries()).reduce<Items<K>>(
@@ -27,8 +32,8 @@ export function useAttributeSelectable<T, K extends Attrs>(
 
   function getAllAttrsSelected(): string[] {
     return Array.from(selectedMap.entries())
-      .filter(([, attrs]) => {
-        return core.isAllAttrsSelected(attrKeys, attrs)
+      .filter(([, gAttrs]) => {
+        return core.isAllAttrsSelected(attrKeys[gAttrs.type], gAttrs.attrs)
       })
       .map(([key]) => key)
   }
@@ -38,8 +43,10 @@ export function useAttributeSelectable<T, K extends Attrs>(
     return (
       allIds.length > 0 &&
       allIds.every((id) => {
-        const attrs = selectedMap.get(id)
-        return attrs && core.isAllAttrsSelected(attrKeys, attrs)
+        const gAttrs = selectedMap.get(id)
+        return (
+          gAttrs && core.isAllAttrsSelected(attrKeys[gAttrs.type], gAttrs.attrs)
+        )
       })
     )
   }
@@ -48,8 +55,13 @@ export function useAttributeSelectable<T, K extends Attrs>(
     return !!getLastSelected()
   }
 
-  function select(id: string, attrKey: string, ctrl = false): void {
-    applySelect(selectedMap, id, attrKey, ctrl)
+  function select(
+    id: string,
+    type: string,
+    attrKey: string,
+    ctrl = false
+  ): void {
+    applySelect(selectedMap, id, type, attrKey, ctrl)
     onUpdated()
   }
 
@@ -63,10 +75,13 @@ export function useAttributeSelectable<T, K extends Attrs>(
       selectedMap.clear()
     } else {
       selectedMap = new Map(
-        Object.keys(getItems()).map((id) => [
-          id,
-          core.createAllAttrsSelected<K>(attrKeys),
-        ])
+        Object.entries(getItems()).map(([id, item]) => {
+          const type = getItemType(item)
+          return [
+            id,
+            { type, attrs: core.createAllAttrsSelected(attrKeys[type]) } as K,
+          ]
+        })
       )
     }
     onUpdated()
@@ -109,36 +124,49 @@ export function useAttributeSelectable<T, K extends Attrs>(
   }
 }
 
-function applySelect(
-  map: SelectedAttrMap<Attrs>,
+function setOrDeleteItem(
+  map: SelectedGenericsAttrMap<GenericsAttrs>,
   id: string,
+  gAttrs: GenericsAttrs
+): void {
+  if (Object.keys(gAttrs.attrs).length > 0) {
+    map.set(id, gAttrs)
+  } else {
+    map.delete(id)
+  }
+}
+
+function applySelect(
+  map: SelectedGenericsAttrMap<GenericsAttrs>,
+  id: string,
+  type: string,
   attrKey: string,
   ctrl = false
 ): void {
   if (!ctrl) {
     map.clear()
-    map.set(id, { [attrKey]: true })
+    map.set(id, { type, attrs: { [attrKey]: true } })
   } else {
     const target = map.get(id)
     if (target) {
-      if (target[attrKey]) {
+      if (target.attrs[attrKey]) {
         const next = { ...target }
-        delete next[attrKey]
+        delete next.attrs[attrKey]
         setOrDeleteItem(map, id, next)
       } else {
         // delete and set to be a last item
         map.delete(id)
-        map.set(id, { ...target, [attrKey]: true })
+        map.set(id, { ...target, attrs: { ...target.attrs, [attrKey]: true } })
       }
     } else {
-      map.set(id, { [attrKey]: true })
+      map.set(id, { type, attrs: { [attrKey]: true } })
     }
   }
 }
 
 function applyMultiSelect(
-  map: SelectedAttrMap<Attrs>,
-  val: Items<Attrs>,
+  map: SelectedGenericsAttrMap<GenericsAttrs>,
+  val: Items<GenericsAttrs>,
   ctrl = false
 ): void {
   if (!ctrl) {
@@ -149,53 +177,49 @@ function applyMultiSelect(
   } else {
     if (isAttrsSelected(map, val)) {
       // clear the attrs if all of its have been selected already
-      Object.entries(val).forEach(([id, attrs]) => {
-        setOrDeleteItem(map, id, core.dropAttrs(map.get(id), attrs))
+      Object.entries(val).forEach(([id, gAttrs]) => {
+        setOrDeleteItem(map, id, {
+          type: gAttrs.type,
+          attrs: core.dropAttrs(map.get(id)?.attrs, gAttrs.attrs),
+        })
       })
     } else {
       // select the attrs if some attrs have not been selected yet
-      Object.entries(val).forEach(([id, attrs]) => {
-        map.set(id, core.mergeAttrs(map.get(id), attrs))
+      Object.entries(val).forEach(([id, gAttrs]) => {
+        map.set(id, {
+          type: gAttrs.type,
+          attrs: core.mergeAttrs(map.get(id)?.attrs, gAttrs.attrs),
+        })
       })
     }
   }
 }
 
-function setOrDeleteItem(
-  map: SelectedAttrMap<Attrs>,
-  id: string,
-  attrs: Attrs
-): void {
-  if (Object.keys(attrs).length > 0) {
-    map.set(id, attrs)
-  } else {
-    map.delete(id)
-  }
-}
-
 function isAttrsSelected(
-  map: SelectedAttrMap<Attrs>,
-  val: Items<Attrs>
+  map: SelectedGenericsAttrMap<GenericsAttrs>,
+  val: Items<GenericsAttrs>
 ): boolean {
-  return Object.entries(val).every(([id, attrs]) => {
+  return Object.entries(val).every(([id, gAttrs]) => {
     const target = map.get(id)
-    return target && core.isAllAttrsSelected(Object.keys(attrs), target)
+    return (
+      target && core.isAllAttrsSelected(Object.keys(gAttrs.attrs), target.attrs)
+    )
   })
 }
 
 function applyDelete(
-  map: SelectedAttrMap<Attrs>,
+  map: SelectedGenericsAttrMap<GenericsAttrs>,
   id: string,
   attrKey: string
 ): void {
   const target = map.get(id)
   if (target) {
-    if (Object.keys(target).length === 1) {
+    if (Object.keys(target.attrs).length === 1) {
       // delete it when no attrs exist
       map.delete(id)
     } else {
       const next = { ...target }
-      delete next[attrKey]
+      delete next.attrs[attrKey]
       map.set(id, next)
     }
   }

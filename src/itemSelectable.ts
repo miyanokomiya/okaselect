@@ -1,4 +1,5 @@
 import type { Items, SelectedItemMap, Options } from './core'
+import * as core from './core'
 
 export function useItemSelectable<T>(
   getItems: () => Items<T>,
@@ -35,8 +36,7 @@ export function useItemSelectable<T>(
   }
 
   function getLastSelected(): string | undefined {
-    const keys = Array.from(selectedMap.keys())
-    return keys.length === 0 ? undefined : keys[keys.length - 1]
+    return core.getLastSelected(selectedMap)
   }
 
   function isAllSelected(): boolean {
