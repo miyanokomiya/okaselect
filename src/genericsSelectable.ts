@@ -55,12 +55,8 @@ export function useGenericsSelectable<T, K extends GenericsAttrs>(
     return !!getLastSelected()
   }
 
-  function select(
-    id: string,
-    type: string,
-    attrKey: string,
-    ctrl = false
-  ): void {
+  function select(id: string, attrKey: string, ctrl = false): void {
+    const type = getItemType(getItems()[id])
     applySelect(selectedMap, id, type, attrKey, ctrl)
     onUpdated()
   }

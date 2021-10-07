@@ -18,14 +18,14 @@ describe('src/genericsSelectable.ts', () => {
             a: { type: 's', attrs: { x: true, y: true } },
           })
         ).toBe(false)
-        target.select('a', 's', 'x', true)
-        target.select('c', 't', 'p', true)
+        target.select('a', 'x', true)
+        target.select('c', 'p', true)
         expect(
           target.isAttrsSelected({
             a: { type: 's', attrs: { x: true, y: true } },
           })
         ).toBe(false)
-        target.select('a', 's', 'y', true)
+        target.select('a', 'y', true)
         expect(
           target.isAttrsSelected({
             a: { type: 's', attrs: { x: true, y: true } },
@@ -47,26 +47,26 @@ describe('src/genericsSelectable.ts', () => {
             }
           )
           expect(target.getSelected()).toEqual({})
-          target.select('a', 's', 'x')
+          target.select('a', 'x')
           expect(target.getSelected()).toEqual({
             a: { type: 's', attrs: { x: true } },
           })
           expect(target.getLastSelected()).toBe('a')
           expect(onUpdated).toHaveBeenCalledTimes(1)
           // replace
-          target.select('a', 's', 'y')
+          target.select('a', 'y')
           expect(target.getSelected()).toEqual({
             a: { type: 's', attrs: { y: true } },
           })
-          target.select('b', 't', 'p')
+          target.select('c', 'p')
           expect(target.getSelected()).toEqual({
-            b: { type: 't', attrs: { p: true } },
+            c: { type: 't', attrs: { p: true } },
           })
-          expect(target.getLastSelected()).toBe('b')
+          expect(target.getLastSelected()).toBe('c')
           // idempotent
-          target.select('b', 't', 'p')
+          target.select('c', 'p')
           expect(target.getSelected()).toEqual({
-            b: { type: 't', attrs: { p: true } },
+            c: { type: 't', attrs: { p: true } },
           })
         })
       })
@@ -78,14 +78,14 @@ describe('src/genericsSelectable.ts', () => {
             getItemType,
             attrKeys
           )
-          target.select('a', 's', 'x', true)
+          target.select('a', 'x', true)
           expect(target.getSelected()).toEqual({
             a: { type: 's', attrs: { x: true } },
           })
-          target.select('c', 's', 'y', true)
+          target.select('c', 'p', true)
           expect(target.getSelected()).toEqual({
             a: { type: 's', attrs: { x: true } },
-            c: { type: 's', attrs: { y: true } },
+            c: { type: 't', attrs: { p: true } },
           })
         })
         it('should remove the status if it has been saved', () => {
@@ -94,33 +94,33 @@ describe('src/genericsSelectable.ts', () => {
             getItemType,
             attrKeys
           )
-          target.select('a', 's', 'x', true)
+          target.select('a', 'x', true)
           expect(target.getLastSelected()).toBe('a')
 
-          target.select('c', 's', 'x', true)
+          target.select('c', 'p', true)
           expect(target.getLastSelected()).toBe('c')
 
-          target.select('c', 's', 'y', true)
+          target.select('c', '1', true)
           expect(target.getLastSelected()).toBe('c')
 
-          target.select('a', 's', 'y', true)
+          target.select('a', 'y', true)
           expect(target.getLastSelected()).toBe('a')
 
-          target.select('c', 's', 'y', true)
+          target.select('c', '1', true)
           expect(target.getLastSelected()).toBe('a')
 
-          target.select('a', 's', 'x', true)
+          target.select('a', 'x', true)
           expect(target.getLastSelected()).toBe('a')
 
-          target.select('c', 's', 'x', true)
+          target.select('c', 'p', true)
           expect(target.getLastSelected()).toBe('a')
           expect(target.getSelected()).toEqual({
             a: { type: 's', attrs: { y: true } },
           })
 
-          target.select('c', 's', 'x', true)
+          target.select('c', 'p', true)
           expect(target.getLastSelected()).toBe('c')
-          target.select('c', 's', 'x', true)
+          target.select('c', 'p', true)
           expect(target.getLastSelected()).toBe('a')
         })
       })
@@ -274,9 +274,9 @@ describe('src/genericsSelectable.ts', () => {
           attrKeys,
           { onUpdated }
         )
-        target.select('a', 's', 'x', true)
-        target.select('a', 's', 'y', true)
-        target.select('c', 't', 'p', true)
+        target.select('a', 'x', true)
+        target.select('a', 'y', true)
+        target.select('c', 'p', true)
         expect(target.getSelected()).toEqual({
           a: { type: 's', attrs: { x: true, y: true } },
           c: { type: 't', attrs: { p: true } },
