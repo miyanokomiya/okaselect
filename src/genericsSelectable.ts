@@ -61,7 +61,7 @@ export function useGenericsSelectable<T, K extends GenericsAttrs>(
     onUpdated()
   }
 
-  function multiSelect(val: Items<K>, ctrl = false): void {
+  function multiSelect(val: Items<K> | Map<string, K>, ctrl = false): void {
     applyMultiSelect(selectedMap, val, ctrl)
     onUpdated()
   }
@@ -162,18 +162,19 @@ function applySelect(
 
 function applyMultiSelect(
   map: SelectedGenericsAttrMap<GenericsAttrs>,
-  val: Items<GenericsAttrs>,
+  val: Items<GenericsAttrs> | Map<string, GenericsAttrs>,
   ctrl = false
 ): void {
+  const entries = core.getEntries(val)
   if (!ctrl) {
     map.clear()
-    Object.entries(val).forEach(([id, attrs]) => {
+    entries.forEach(([id, attrs]) => {
       map.set(id, { ...(map.get(id) ?? {}), ...attrs })
     })
   } else {
     if (isAttrsSelected(map, val)) {
       // clear the attrs if all of its have been selected already
-      Object.entries(val).forEach(([id, gAttrs]) => {
+      entries.forEach(([id, gAttrs]) => {
         setOrDeleteItem(map, id, {
           type: gAttrs.type,
           attrs: core.dropAttrs(map.get(id)?.attrs, gAttrs.attrs),
@@ -181,7 +182,7 @@ function applyMultiSelect(
       })
     } else {
       // select the attrs if some attrs have not been selected yet
-      Object.entries(val).forEach(([id, gAttrs]) => {
+      entries.forEach(([id, gAttrs]) => {
         map.set(id, {
           type: gAttrs.type,
           attrs: core.mergeAttrs(map.get(id)?.attrs, gAttrs.attrs),
@@ -193,9 +194,9 @@ function applyMultiSelect(
 
 function isAttrsSelected(
   map: SelectedGenericsAttrMap<GenericsAttrs>,
-  val: Items<GenericsAttrs>
+  val: Items<GenericsAttrs> | Map<string, GenericsAttrs>
 ): boolean {
-  return Object.entries(val).every(([id, gAttrs]) => {
+  return core.getEntries(val).every(([id, gAttrs]) => {
     const target = map.get(id)
     return (
       target && core.isAllAttrsSelected(Object.keys(gAttrs.attrs), target.attrs)

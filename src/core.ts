@@ -23,6 +23,12 @@ export type Options = {
   onUpdated?: () => void
 }
 
+export function getEntries<T>(items: Items<T> | Map<string, T>): [string, T][] {
+  return items instanceof Map
+    ? Array.from(items.entries())
+    : Object.entries(items)
+}
+
 export function getLastSelected(
   selectedMap: Map<string, unknown>
 ): string | undefined {

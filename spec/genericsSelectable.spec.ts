@@ -216,6 +216,32 @@ describe('src/genericsSelectable.ts', () => {
           expect(onUpdated).toHaveBeenCalledTimes(3)
         })
       })
+
+      describe('when a map is passed', () => {
+        it('should keep the order', () => {
+          const onUpdated = jest.fn()
+          const target = useGenericsSelectable(
+            () => items,
+            getItemType,
+            attrKeys,
+            { onUpdated }
+          )
+          const map = new Map<string, any>([
+            ['c', { type: 's', attrs: { x: true } }],
+            ['a', { type: 't', attrs: { q: true } }],
+            ['b', { type: 's', attrs: { x: true } }],
+          ])
+
+          target.multiSelect(map)
+          expect(target.getSelected()).toEqual({
+            c: { type: 's', attrs: { x: true } },
+            a: { type: 't', attrs: { q: true } },
+            b: { type: 's', attrs: { x: true } },
+          })
+          expect(target.getLastSelected()).toBe('b')
+          expect(onUpdated).toHaveBeenCalledTimes(1)
+        })
+      })
     })
 
     describe('selectAll', () => {

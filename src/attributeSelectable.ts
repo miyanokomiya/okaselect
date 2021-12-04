@@ -53,7 +53,7 @@ export function useAttributeSelectable<T, K extends Attrs>(
     onUpdated()
   }
 
-  function multiSelect(val: Items<K>, ctrl = false): void {
+  function multiSelect(val: Items<K> | Map<string, Attrs>, ctrl = false): void {
     applyMultiSelect(selectedMap, val, ctrl)
     onUpdated()
   }
@@ -138,23 +138,24 @@ function applySelect(
 
 function applyMultiSelect(
   map: SelectedAttrMap<Attrs>,
-  val: Items<Attrs>,
+  val: Items<Attrs> | Map<string, Attrs>,
   ctrl = false
 ): void {
+  const entries = core.getEntries(val)
   if (!ctrl) {
     map.clear()
-    Object.entries(val).forEach(([id, attrs]) => {
+    entries.forEach(([id, attrs]) => {
       map.set(id, { ...(map.get(id) ?? {}), ...attrs })
     })
   } else {
     if (isAttrsSelected(map, val)) {
       // clear the attrs if all of its have been selected already
-      Object.entries(val).forEach(([id, attrs]) => {
+      entries.forEach(([id, attrs]) => {
         setOrDeleteItem(map, id, core.dropAttrs(map.get(id), attrs))
       })
     } else {
       // select the attrs if some attrs have not been selected yet
-      Object.entries(val).forEach(([id, attrs]) => {
+      entries.forEach(([id, attrs]) => {
         map.set(id, core.mergeAttrs(map.get(id), attrs))
       })
     }
@@ -175,9 +176,9 @@ function setOrDeleteItem(
 
 function isAttrsSelected(
   map: SelectedAttrMap<Attrs>,
-  val: Items<Attrs>
+  val: Items<Attrs> | Map<string, Attrs>
 ): boolean {
-  return Object.entries(val).every(([id, attrs]) => {
+  return core.getEntries(val).every(([id, attrs]) => {
     const target = map.get(id)
     return target && core.isAllAttrsSelected(Object.keys(attrs), target)
   })

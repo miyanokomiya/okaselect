@@ -135,6 +135,29 @@ describe('src/attributeSelectable.ts', () => {
           expect(onUpdated).toHaveBeenCalledTimes(3)
         })
       })
+
+      describe('when a map is passed', () => {
+        it('should keep the order', () => {
+          const onUpdated = jest.fn()
+          const target = useAttributeSelectable(() => items, attrKeys, {
+            onUpdated,
+          })
+          const map = new Map<string, { [key: string]: true }>([
+            ['c', { y: true }],
+            ['a', { x: true }],
+            ['b', { y: true }],
+          ])
+
+          target.multiSelect(map)
+          expect(target.getSelected()).toEqual({
+            c: { y: true },
+            a: { x: true },
+            b: { y: true },
+          })
+          expect(target.getLastSelected()).toBe('b')
+          expect(onUpdated).toHaveBeenCalledTimes(1)
+        })
+      })
     })
 
     describe('getAllAttrsSelected', () => {
