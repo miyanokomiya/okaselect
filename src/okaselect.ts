@@ -2,4 +2,4 @@ export * from './itemSelectable'
 export * from './attributeSelectable'
 export * from './genericsSelectable'
 
-export { Attrs, GenericsAttrs } from './core'
+export type { Attrs, GenericsAttrs } from './core'
