@@ -9,14 +9,15 @@
   "author": "miyanokomiya <tomoya.hstexze24632@gmail.com>",
   "license": "MIT",
   "private": false,
+  "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a",
   "scripts": {
-    "lint:es": "yarn eslint ./src ./spec ./*.js --ext .js,.ts",
-    "lint:json": "yarn prettier -c ./*.json ./.*.json",
-    "lint": "yarn lint:es && yarn lint:json",
-    "lint:fix": "yarn lint:es --fix && yarn lint:json --write",
+    "lint:es": "pnpm eslint ./src ./spec ./*.js --ext .js,.ts",
+    "lint:json": "pnpm prettier -c ./*.json ./.*.json",
+    "lint": "pnpm lint:es && pnpm lint:json",
+    "lint:fix": "pnpm lint:es --fix && pnpm lint:json --write",
     "test": "jest --coverage",
-    "build": "rm -rf ./dist && yarn rollup -c",
-    "prepublishOnly": "yarn build"
+    "build": "rm -rf ./dist && pnpm rollup -c",
+    "prepublishOnly": "pnpm build"
   },
   "devDependencies": {
     "@types/jest": "^29.4.0",
