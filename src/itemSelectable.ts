@@ -80,11 +80,15 @@ export function useItemSelectable<T>(
   }
 
   function clear(id: string): void {
+    if (!selectedMap.has(id)) return
+
     selectedMap.delete(id)
     onUpdated()
   }
 
   function clearAll(): void {
+    if (selectedMap.size === 0) return
+
     selectedMap.clear()
     onUpdated()
   }

@@ -283,6 +283,9 @@ describe('src/attributeSelectable.ts', () => {
         })
         expect(onUpdated).toHaveBeenCalledTimes(2)
         expect(target.getLastSelected()).toBe('a')
+
+        target.clear('c', 'c_0')
+        expect(onUpdated).toHaveBeenCalledTimes(2)
       })
     })
 
@@ -302,6 +305,9 @@ describe('src/attributeSelectable.ts', () => {
 
         target.clearAll()
         expect(target.getSelected()).toEqual({})
+        expect(onUpdated).toHaveBeenCalledTimes(2)
+
+        target.clearAll()
         expect(onUpdated).toHaveBeenCalledTimes(2)
       })
     })

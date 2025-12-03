@@ -324,6 +324,9 @@ describe('src/genericsSelectable.ts', () => {
         })
         expect(onUpdated).toHaveBeenCalledTimes(2)
         expect(target.getLastSelected()).toBe('a')
+
+        target.clear('c', 'p')
+        expect(onUpdated).toHaveBeenCalledTimes(2)
       })
     })
 
@@ -343,6 +346,10 @@ describe('src/genericsSelectable.ts', () => {
           c: { type: 't', attrs: { p: true, q: true } },
         })
         expect(onUpdated).toHaveBeenCalledTimes(1)
+
+        target.clearAll()
+        expect(target.getSelected()).toEqual({})
+        expect(onUpdated).toHaveBeenCalledTimes(2)
 
         target.clearAll()
         expect(target.getSelected()).toEqual({})

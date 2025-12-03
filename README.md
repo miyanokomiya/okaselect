@@ -8,7 +8,7 @@ You can select your items with some petterns: ctrl-select, multi-select, all-sel
 ## usage
 
 ```sh
-yarn add okaselect
+npm install okaselect
 ```
 
 ```js
@@ -33,16 +33,16 @@ console.log(selectable.getLastSelectedId()) // => 'c'
 
 ```sh
 # install dependencies
-$ yarn install
+$ pnpm install
 
 # lint
-$ yarn lint
+$ pnpm lint
 
 # test
-$ yarn test [--watch]
+$ pnpm test [--watch]
 
 # build
-$ yarn build
+$ pnpm build
 ```
 
 ## publish

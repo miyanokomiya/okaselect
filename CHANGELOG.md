@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.1] - 2025-12-03
+### Changed
+- Prevent `clear` and `clearAll` methods from triggering update-event when nothing changes.
+- Migrate the project with PNPM
+
 ## [0.1.0] - 2023-02-04
 ### Changed
 - Replace build packages to rollup + esbuild.

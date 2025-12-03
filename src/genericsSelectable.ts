@@ -84,11 +84,15 @@ export function useGenericsSelectable<T, K extends GenericsAttrs>(
   }
 
   function clear(id: string, attrKey: string): void {
+    if (!selectedMap.has(id)) return
+
     applyDelete(selectedMap, id, attrKey)
     onUpdated()
   }
 
   function clearAll(): void {
+    if (selectedMap.size === 0) return
+
     selectedMap.clear()
     onUpdated()
   }
