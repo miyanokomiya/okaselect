@@ -26,7 +26,7 @@ describe('okaselect', () => {
           // idempotent
           target.select('b')
           expect(target.getSelectedItemList()).toEqual([{ id: 'b' }])
-          expect(onUpdated).toHaveBeenCalledTimes(3)
+          expect(onUpdated).toHaveBeenCalledTimes(2)
         })
       })
 
@@ -65,6 +65,10 @@ describe('okaselect', () => {
           // idempotent
           target.multiSelect(['a', 'c'])
           expect(target.getSelectedList()).toEqual(['a', 'c'])
+          expect(onUpdated).toHaveBeenCalledTimes(2)
+
+          target.multiSelect(['c'])
+          expect(target.getSelectedList()).toEqual(['c'])
           expect(onUpdated).toHaveBeenCalledTimes(3)
         })
       })
@@ -121,14 +125,19 @@ describe('okaselect', () => {
         target.selectAll()
         expect(target.getSelectedList()).toEqual(['a', 'b', 'c'])
         expect(onUpdated).toHaveBeenCalledTimes(1)
+        target.selectAll()
+        expect(onUpdated).toHaveBeenCalledTimes(1)
       })
       it('should toggle select all items if toggle = true', () => {
-        const target = useItemSelectable(() => items)
+        const onUpdated = jest.fn()
+        const target = useItemSelectable(() => items, { onUpdated })
         target.select('a')
         target.selectAll(true)
         expect(target.getSelectedList()).toEqual(['a', 'b', 'c'])
+        expect(onUpdated).toHaveBeenCalledTimes(2)
         target.selectAll(true)
         expect(target.getSelectedList()).toEqual([])
+        expect(onUpdated).toHaveBeenCalledTimes(3)
       })
     })
 

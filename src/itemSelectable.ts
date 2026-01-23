@@ -49,8 +49,10 @@ export function useItemSelectable<T>(
   }
 
   function select(id: string, ctrl = false): void {
+    const current = selectedMap.get(id)
     applySelect(selectedMap, id, ctrl)
-    onUpdated()
+    const next = selectedMap.get(id)
+    if (current !== next) onUpdated()
   }
 
   function multiSelect(ids: string[], ctrl = false): void {
@@ -65,18 +67,23 @@ export function useItemSelectable<T>(
       }
       onUpdated()
     } else {
+      const changed =
+        ids.length !== selectedMap.size ||
+        ids.some((id) => !selectedMap.get(id))
       selectedMap = new Map(ids.map((id) => [id, true]))
-      onUpdated()
+      if (changed) onUpdated()
     }
   }
 
   function selectAll(toggle = false): void {
+    const current = selectedMap.size
     if (toggle && isAllSelected()) {
       selectedMap.clear()
     } else {
       selectedMap = new Map(Object.keys(getItems()).map((id) => [id, true]))
     }
-    onUpdated()
+    const next = selectedMap.size
+    if (current !== next) onUpdated()
   }
 
   function clear(id: string): void {
