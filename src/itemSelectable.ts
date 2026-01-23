@@ -93,6 +93,18 @@ export function useItemSelectable<T>(
     onUpdated()
   }
 
+  function selectForce(ids: string[]): void {
+    const changed = ids.some((id) => !selectedMap.has(id))
+    ids.forEach((id) => selectedMap.set(id, true))
+    if (changed) onUpdated()
+  }
+
+  function clearForce(ids: string[]): void {
+    const changed = ids.some((id) => selectedMap.has(id))
+    ids.forEach((id) => selectedMap.delete(id))
+    if (changed) onUpdated()
+  }
+
   function createSnapshot(): [string, true][] {
     return Array.from(selectedMap.entries())
   }
@@ -116,6 +128,8 @@ export function useItemSelectable<T>(
     selectAll,
     clear,
     clearAll,
+    selectForce,
+    clearForce,
     createSnapshot,
     restore,
   }

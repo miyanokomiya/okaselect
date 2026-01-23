@@ -162,6 +162,39 @@ describe('okaselect', () => {
       })
     })
 
+    describe('selectForce', () => {
+      it('should select targets', () => {
+        const onUpdated = jest.fn()
+        const target = useItemSelectable(() => items, { onUpdated })
+        expect(target.getSelectedItemList()).toEqual([])
+        expect(target.getLastSelected()).toBe(undefined)
+        target.selectForce(['a', 'b'])
+        expect(target.getSelectedItemList()).toEqual([{ id: 'a' }, { id: 'b' }])
+        expect(target.getLastSelected()).toBe('b')
+        expect(onUpdated).toHaveBeenCalledTimes(1)
+        // idempotent
+        target.selectForce(['a', 'b'])
+        expect(target.getSelectedItemList()).toEqual([{ id: 'a' }, { id: 'b' }])
+        expect(onUpdated).toHaveBeenCalledTimes(1)
+      })
+    })
+
+    describe('clearForce', () => {
+      it('should select targets', () => {
+        const onUpdated = jest.fn()
+        const target = useItemSelectable(() => items, { onUpdated })
+        target.selectForce(['a', 'b'])
+        target.clearForce(['a', 'b'])
+        expect(target.getSelectedItemList()).toEqual([])
+        expect(target.getLastSelected()).toBe(undefined)
+        expect(onUpdated).toHaveBeenCalledTimes(2)
+        // idempotent
+        target.clearForce(['a', 'b'])
+        expect(target.getSelectedItemList()).toEqual([])
+        expect(onUpdated).toHaveBeenCalledTimes(2)
+      })
+    })
+
     describe('getSelected', () => {
       it('should return selected ids as an object', () => {
         const target = useItemSelectable(() => items)
