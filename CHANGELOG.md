@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.2] - 2026-01-24
+### Added
+- Add new methods to forcefully select / deselect into `ItemSelectable`
+
+### Changed
+- Prevent `ItemSelectable` from triggering `onUpdate` when nothing changes
+
 ## [0.1.1] - 2025-12-03
 ### Changed
 - Prevent `clear` and `clearAll` methods from triggering update-event when nothing changes.
